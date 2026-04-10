@@ -10,6 +10,63 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  --color-inverse-surface: #2d3133;
+  --color-inverse-on-surface: #eff1f3;
+  --color-on-tertiary-fixed-variant: #7c2e00;
+  --color-on-surface: #191c1e;
+  --color-tertiary-fixed-dim: #ffb695;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-primary: #ffffff;
+  /* --color-background: #f7f9fb; (overridden below) */
+  --color-tertiary-fixed: #ffdbcc;
+  --color-surface: #f7f9fb;
+  --color-surface-container: #eceef0;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #fffbff;
+  --color-primary-fixed-dim: #adc7ff;
+  --color-tertiary-container: #c64f00;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-container-high: #e6e8ea;
+  --color-on-secondary-fixed-variant: #052fc8;
+  --color-secondary-fixed-dim: #bac3ff;
+  --color-surface-container-highest: #e0e3e5;
+  --color-on-surface-variant: #414754;
+  --color-surface-tint: #005bc0;
+  --color-secondary-fixed: #dee0ff;
+  --color-outline-variant: #c1c6d7;
+  --color-error: #ba1a1a;
+  --color-outline: #717786;
+  --color-surface-dim: #d8dadc;
+  --color-on-error: #ffffff;
+  --color-on-background: #191c1e;
+  --color-surface-variant: #e0e3e5;
+  --color-on-secondary-container: #fffbff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-on-primary-fixed: #001a41;
+  --color-on-secondary-fixed: #000f5c;
+  --color-on-primary-container: #fefcff;
+  --color-primary: #0059bb;
+  --color-on-tertiary-fixed: #351000;
+  --color-inverse-primary: #adc7ff;
+  --color-tertiary: #9e3d00;
+  --color-secondary: #2d4add;
+  --color-surface-container-low: #f2f4f6;
+  --color-primary-fixed: #d8e2ff;
+  --color-on-primary-fixed-variant: #004493;
+  --color-primary-container: #0070ea;
+  --color-secondary-container: #4b65f7;
+  --color-on-secondary: #ffffff;
+
+  --radius: 0.25rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-full: 9999px;
+
+  --font-headline: var(--font-manrope);
+  --font-body: var(--font-inter);
+  --font-label: var(--font-inter);
 }
 
 @media (prefers-color-scheme: dark) {
