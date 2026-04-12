@@ -1,7 +1,104 @@
-import { Icon } from "@iconify/react";
+'use client'
 
+import { Icon } from "@iconify/react";
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function Checkout() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const flightId = searchParams.get('flightId');
+    
+    const [flight, setFlight] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const [formData, setFormData] = useState({
+        passenger_name: '',
+        passenger_surname: '',
+        passenger_email: ''
+    });
+
+    const [bookingSuccess, setBookingSuccess] = useState(null);
+
+    useEffect(() => {
+        if (flightId) {
+            const fetchFlight = async () => {
+                try {
+                    const res = await fetch(`http://localhost:5000/api/flights/${flightId}`);
+                    const json = await res.json();
+                    if (json.success) {
+                        setFlight(json.data);
+                    } else {
+                        setError('Flight not found.');
+                    }
+                } catch (err) {
+                    setError('Failed to fetch flight details.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchFlight();
+        } else {
+            setError('No flight selected. Please go back to the home page.');
+            setLoading(false);
+        }
+    }, [flightId]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleBooking = async (e) => {
+        e.preventDefault();
+        
+        try {
+            const res = await fetch('http://localhost:5000/api/tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    flight_id: flightId,
+                    ...formData
+                })
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                setBookingSuccess(json.data.ticket_id);
+            } else {
+                alert(`Booking failed: ${json.error}`);
+            }
+        } catch (err) {
+            console.error('Failed to book', err);
+            alert('Failed to book. Please try again.');
+        }
+    };
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center font-bold">Loading flight details...</div>;
+    if (error) return <div className="min-h-screen flex items-center justify-center text-red-500 font-bold">{error}</div>;
+
+    if (bookingSuccess) {
+        return (
+            <div className="bg-background min-h-screen flex items-center justify-center pt-20">
+                <div className="bg-surface-container-lowest p-12 rounded-xl shadow-lg max-w-lg text-center border-t-8 border-primary">
+                    <Icon icon="mdi:check-circle" className="text-secondary text-8xl mx-auto mb-6" />
+                    <h2 className="text-3xl font-extrabold mb-4">Booking Confirmed!</h2>
+                    <p className="text-on-surface-variant mb-6">Your flight from {flight.from_city?.city_name} to {flight.to_city?.city_name} is confirmed.</p>
+                    <div className="bg-surface-container-highest p-6 rounded-lg mb-8">
+                        <span className="block text-sm uppercase tracking-widest font-bold text-on-surface-variant mb-2">Your Ticket ID</span>
+                        <span className="text-4xl font-black text-primary tracking-widest">{bookingSuccess}</span>
+                    </div>
+                    <button onClick={() => router.push('/')} className="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-all">
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
   return (
     <div className="text-on-surface">
       {/* Main Content Canvas */}
@@ -34,13 +131,17 @@ export default function Checkout() {
                   Passenger Information
                 </h2>
               </div>
-              <form className="space-y-8">
+              <form onSubmit={handleBooking} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold uppercase tracking-wider text-on-surface-variant ml-1">
                       Passenger Name
                     </label>
                     <input
+                      required
+                      name="passenger_name"
+                      value={formData.passenger_name}
+                      onChange={handleInputChange}
                       className="w-full h-14 px-6 rounded-full bg-surface-container-low border-0 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline/60"
                       placeholder="e.g. Alexander"
                       type="text"
@@ -51,6 +152,10 @@ export default function Checkout() {
                       Passenger Surname
                     </label>
                     <input
+                      required
+                      name="passenger_surname"
+                      value={formData.passenger_surname}
+                      onChange={handleInputChange}
                       className="w-full h-14 px-6 rounded-full bg-surface-container-low border-0 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline/60"
                       placeholder="e.g. Mitchell"
                       type="text"
@@ -62,6 +167,10 @@ export default function Checkout() {
                     Email Address
                   </label>
                   <input
+                    required
+                    name="passenger_email"
+                    value={formData.passenger_email}
+                    onChange={handleInputChange}
                     className="w-full h-14 px-6 rounded-full bg-surface-container-low border-0 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline/60"
                     placeholder="alex.mitchell@example.com"
                     type="email"
@@ -78,8 +187,9 @@ export default function Checkout() {
                   </div>
                   <div className="relative">
                     <input
-                      className="w-full h-14 px-6 rounded-full bg-surface-container-low border-0 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline/60"
-                      placeholder="e.g. 14A"
+                      disabled
+                      className="w-full h-14 px-6 rounded-full bg-surface-container-low border-0 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest opacity-50 cursor-not-allowed transition-all placeholder:text-outline/60"
+                      placeholder="Auto Assigned"
                       type="text"
                     />
                     <Icon icon="material-symbols:event-seat" className="absolute right-6 top-1/2 -translate-y-1/2 text-outline" />
@@ -139,7 +249,7 @@ export default function Checkout() {
                       Outbound
                     </p>
                     <h3 className="text-xl font-extrabold tracking-tight">
-                      IST → CDG
+                      {flight.from_city?.city_name.slice(0, 3).toUpperCase()} → {flight.to_city?.city_name.slice(0, 3).toUpperCase()}
                     </h3>
                   </div>
                   <Icon icon="material-symbols:flight-takeoff" className="text-primary" />
@@ -147,7 +257,7 @@ export default function Checkout() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-on-surface-variant">
-                      Istanbul to Paris
+                      {flight.from_city?.city_name} to {flight.to_city?.city_name}
                     </span>
                     <span className="text-sm font-semibold">Non-stop</span>
                   </div>
@@ -155,13 +265,17 @@ export default function Checkout() {
                     <span className="text-sm text-on-surface-variant">
                       Departure
                     </span>
-                    <span className="text-sm font-semibold">08:45 AM</span>
+                    <span className="text-sm font-semibold">
+                      {new Date(flight.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-on-surface-variant">
                       Arrival
                     </span>
-                    <span className="text-sm font-semibold">11:20 AM</span>
+                    <span className="text-sm font-semibold">
+                      {new Date(flight.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -172,19 +286,19 @@ export default function Checkout() {
                   <span className="text-sm text-on-surface-variant">
                     Adult Passenger x1
                   </span>
-                  <span className="text-sm font-medium">$215.00</span>
+                  <span className="text-sm font-medium">${flight.price.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-on-surface-variant">
                     Taxes & Fees
                   </span>
-                  <span className="text-sm font-medium">$34.00</span>
+                  <span className="text-sm font-medium">${(flight.price * 0.15).toFixed(2)}</span>
                 </div>
                 <div className="h-[1px] bg-outline-variant/30 my-4"></div>
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold">Total Price</span>
                   <span className="text-2xl font-black text-primary tracking-tighter">
-                    $249
+                    ${(flight.price + (flight.price * 0.15)).toFixed(2)}
                   </span>
                 </div>
               </div>
