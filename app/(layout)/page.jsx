@@ -67,6 +67,13 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    // Auto-search when cities are loaded to show initial results
+    if (!loadingCities) {
+      handleSearch();
+    }
+  }, [loadingCities]);
+
   const handleBook = (flightId) => {
     router.push(`/checkout?flightId=${flightId}`);
   };

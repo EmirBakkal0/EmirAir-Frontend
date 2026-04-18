@@ -82,7 +82,7 @@ export default function Checkout() {
 
     if (bookingSuccess) {
         return (
-            <div className="bg-background min-h-screen flex items-center justify-center pt-20">
+            <div className="bg-background min-h-screen flex items-center justify-center ">
                 <div className="bg-surface-container-lowest p-12 rounded-xl shadow-lg max-w-lg text-center border-t-8 border-primary">
                     <Icon icon="mdi:check-circle" className="text-secondary text-8xl mx-auto mb-6" />
                     <h2 className="text-3xl font-extrabold mb-4">Booking Confirmed!</h2>
@@ -102,7 +102,7 @@ export default function Checkout() {
   return (
     <div className="text-on-surface">
       {/* Main Content Canvas */}
-      <main className="pt-32 pb-24 px-6 md:px-8 max-w-7xl mx-auto">
+      <main className="pt-4 pb-24 px-6 md:px-8 max-w-7xl mx-auto">
         {/* Header Section */}
         <header className="mb-12">
           <nav className="flex mb-4 gap-2 text-sm text-on-surface-variant">
