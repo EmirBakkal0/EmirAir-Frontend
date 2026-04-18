@@ -1,20 +1,24 @@
 "use client";
-import Link from 'next/link';
-import Image from 'next/image';
-import { Icon } from '@iconify/react';
-import { useState, useEffect } from 'react';
+import Link from "next/link";
+import Image from "next/image";
+import { Icon } from "@iconify/react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
+  const router = useRouter();
 
-  const [cities, setCities] = useState([])
-  const [flights, setFlights] = useState([])
-  const [flightAmount,setFlightAmount]= useState(0);
+  const [cities, setCities] = useState([]);
+  const [flights, setFlights] = useState([]);
+  const [flightAmount, setFlightAmount] = useState(0);
 
   const fetchCities = async () => {
     try {
       const res = await fetch(process.env.NEXT_PUBLIC_BACKEND + "/api/cities");
       if (!res.ok) {
-        throw new Error(`Failed to fetch cities: ${res.status} ${res.statusText}`);
+        throw new Error(
+          `Failed to fetch cities: ${res.status} ${res.statusText}`,
+        );
       }
       const data = await res.json();
       setCities(data);
@@ -23,45 +27,74 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchActiveFlights= async () => {
-    try{
-      const response= await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/flights/active`);
-      if(!response.ok){
-        throw new Error(`Failed to fetch flights: ${response.status} ${response.statusText}`);
+  const fetchActiveFlights = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/api/flights/active`,
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch flights: ${response.status} ${response.statusText}`,
+        );
       }
-      const json= await response.json();
+      const json = await response.json();
       if (json.success && Array.isArray(json.data)) {
         let results = json.data;
         setFlights(results);
         setFlightAmount(results.length);
       }
-    }catch(errrooor){
-      console.error("error while fetching flights",errrooor);
+    } catch (errrooor) {
+      console.error("error while fetching flights", errrooor);
     }
-    
-  }
+  };
 
-  
   useEffect(() => {
-    fetchCities()
-    fetchActiveFlights()
-  },[])
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      router.push("/admin/login");
+      return;
+    }
 
+    fetchCities();
+    fetchActiveFlights();
+  }, [router]);
 
+  async function deleteFlight(id) {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/api/flights/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        },
+      );
 
-
+      if (!res.ok) {
+        throw new Error(
+          `Failed to delete flight: ${res.status} ${res.statusText}`,
+        );
+      }
+      fetchActiveFlights();
+    } catch (error) {
+      console.error("Error deleting flight:", error);
+    }
+  }
 
   return (
     <div className="bg-background text-on-background min-h-screen flex overflow-hidden">
-      
-
       {/* Main Content Area */}
       <main className="flex-1 ml-64 min-h-screen flex flex-col">
         {/* TopAppBar Component */}
         <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl fixed top-0 right-0 w-[calc(100%-16rem)] z-40 flex justify-between items-center px-8 h-16">
           <div className="flex items-center gap-4 flex-1">
             <div className="relative w-full max-w-md">
-              <Icon icon="material-symbols:search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Icon
+                icon="material-symbols:search"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
               <input
                 className="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none font-body"
                 placeholder="Search flights, routes or IDs..."
@@ -80,7 +113,9 @@ export default function AdminDashboard() {
             </div>
             <div className="h-8 w-[1px] bg-outline-variant/20"></div>
             <div className="flex items-center gap-3">
-              <span className="text-sm font-manrope font-bold text-blue-600">Dashboard</span>
+              <span className="text-sm font-manrope font-bold text-blue-600">
+                Dashboard
+              </span>
               <img
                 alt="Administrator"
                 className="w-8 h-8 rounded-full border border-outline-variant/30"
@@ -102,10 +137,13 @@ export default function AdminDashboard() {
                 Active Flight Schedules
               </h2>
             </div>
-            <button className="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-3.5 rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+            <Link
+              href={"admin/add-flight"}
+              className="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-3.5 rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
               <Icon icon="material-symbols:add" />
               Add New Flight
-            </button>
+            </Link>
           </div>
 
           {/* Bento Stats Grid */}
@@ -114,7 +152,9 @@ export default function AdminDashboard() {
               <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
                 Total Flights
               </p>
-              <h3 className="text-3xl font-black text-on-surface">{flightAmount}</h3>
+              <h3 className="text-3xl font-black text-on-surface">
+                {flightAmount}
+              </h3>
               <div className="mt-4 flex items-center text-xs text-green-600 font-bold">
                 <Icon icon="material-symbols:trending-up" className="text-sm" />
                 <span>+12% vs last month</span>
@@ -126,7 +166,10 @@ export default function AdminDashboard() {
               </p>
               <h3 className="text-3xl font-black text-on-surface">94.2%</h3>
               <div className="mt-4 flex items-center text-xs text-blue-600 font-bold">
-                <Icon icon="material-symbols:check-circle" className="text-sm" />
+                <Icon
+                  icon="material-symbols:check-circle"
+                  className="text-sm"
+                />
                 <span>Industry leading</span>
               </div>
             </div>
@@ -188,7 +231,7 @@ export default function AdminDashboard() {
                       Arrival
                     </th>
                     <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
-                      Status
+                      Empty Seats
                     </th>
                     <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
                       Price
@@ -200,140 +243,88 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody className="divide-y divide-outline-variant/5">
                   {/* Row 1 */}
-                  <tr className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-6 py-5">
-                      <span className="font-manrope font-bold text-on-surface">FT-8821</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="text-sm">
-                          <p className="font-bold text-on-surface">LHR</p>
-                          <p className="text-xs text-slate-400">London</p>
+                  {flights.map((flight) => (
+                    <tr
+                      key={flight._id}
+                      className="hover:bg-surface-container-low transition-colors group"
+                    >
+                      <td className="px-6 py-5">
+                        <span className="font-manrope font-bold text-on-surface">
+                          {flight.flight_id}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="text-sm">
+                            <p className="font-bold text-on-surface">
+                              {flight.from_city?.city_name
+                                .slice(0, 3)
+                                .toUpperCase()}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {flight.to_city?.city_name}
+                            </p>
+                          </div>
+                          <Icon
+                            icon="material-symbols:arrow-forward"
+                            className="text-primary/40 text-sm"
+                          />
+                          <div className="text-sm">
+                            <p className="font-bold text-on-surface">
+                              {flight.to_city?.city_name
+                                .slice(0, 3)
+                                .toUpperCase()}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {flight.to_city?.city_name}
+                            </p>
+                          </div>
                         </div>
-                        <Icon icon="material-symbols:arrow-forward" className="text-primary/40 text-sm" />
-                        <div className="text-sm">
-                          <p className="font-bold text-on-surface">JFK</p>
-                          <p className="text-xs text-slate-400">New York</p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-medium text-on-surface">
+                          {new Date(flight.departure_time).toLocaleString()}
+                        </p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-medium text-on-surface">
+                          {new Date(flight.arrival_time).toLocaleString()}
+                        </p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
+                          {flight.seats_available} seats available
+                        </span>
+                      </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-bold text-primary">
+                          {"€" + flight.price.toFixed(2)}
+                        </p>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+                            <Icon
+                              icon="material-symbols:edit"
+                              className="text-sm"
+                            />
+                          </button>
+                          <button onClick={() => deleteFlight(flight._id)} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-error hover:bg-error-container/20 transition-all">
+                            <Icon
+                              icon="material-symbols:delete"
+                              className="text-sm"
+                            />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-medium text-on-surface">Oct 24, 10:45 AM</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-medium text-on-surface">Oct 24, 01:20 PM</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                        On Time
-                      </span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-bold text-primary">$840.00</p>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
-                          <Icon icon="material-symbols:edit" className="text-sm" />
-                        </button>
-                        <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-error hover:bg-error-container/20 transition-all">
-                          <Icon icon="material-symbols:delete" className="text-sm" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {/* Row 2 */}
-                  <tr className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-6 py-5">
-                      <span className="font-manrope font-bold text-on-surface">FT-4192</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="text-sm">
-                          <p className="font-bold text-on-surface">CDG</p>
-                          <p className="text-xs text-slate-400">Paris</p>
-                        </div>
-                        <Icon icon="material-symbols:arrow-forward" className="text-primary/40 text-sm" />
-                        <div className="text-sm">
-                          <p className="font-bold text-on-surface">HND</p>
-                          <p className="text-xs text-slate-400">Tokyo</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-medium text-on-surface">Oct 25, 08:30 PM</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-medium text-on-surface">Oct 26, 11:15 AM</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                        Delayed
-                      </span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-bold text-primary">$1,250.00</p>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
-                          <Icon icon="material-symbols:edit" className="text-sm" />
-                        </button>
-                        <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-error hover:bg-error-container/20 transition-all">
-                          <Icon icon="material-symbols:delete" className="text-sm" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {/* Row 3 */}
-                  <tr className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-6 py-5">
-                      <span className="font-manrope font-bold text-on-surface">FT-3305</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="text-sm">
-                          <p className="font-bold text-on-surface">DXB</p>
-                          <p className="text-xs text-slate-400">Dubai</p>
-                        </div>
-                        <Icon icon="material-symbols:arrow-forward" className="text-primary/40 text-sm" />
-                        <div className="text-sm">
-                          <p className="font-bold text-on-surface">SYD</p>
-                          <p className="text-xs text-slate-400">Sydney</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-medium text-on-surface">Oct 25, 03:00 AM</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-medium text-on-surface">Oct 26, 06:45 AM</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                        Boarding
-                      </span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-bold text-primary">$1,890.00</p>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
-                          <Icon icon="material-symbols:edit" className="text-sm" />
-                        </button>
-                        <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-error hover:bg-error-container/20 transition-all">
-                          <Icon icon="material-symbols:delete" className="text-sm" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
 
             {/* Pagination Footer */}
-            <div className="px-6 py-4 bg-surface-container-low/20 flex justify-between items-center border-t border-outline-variant/5">
+            {/* <div className="px-6 py-4 bg-surface-container-low/20 flex justify-between items-center border-t border-outline-variant/5">
               <p className="text-xs text-slate-500 font-medium">
                 Showing <span className="text-on-surface font-bold">1-10</span> of 1,284 flights
               </p>
@@ -361,7 +352,7 @@ export default function AdminDashboard() {
                   <Icon icon="material-symbols:chevron-right" />
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </main>
