@@ -1,9 +1,23 @@
+'use client';
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import Image from "next/image";     
-
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function AdminSidebar() {
+    const router = useRouter();
+    const handleLogout = () => {
+        localStorage.removeItem("adminToken");
+        router.push("/admin/login");
+    };
+  
+  const pathname = usePathname();
+
+  if (pathname === '/admin/login') {
+    return null;
+  }
+
       return (<aside className="bg-slate-950 dark:bg-slate-950 h-screen w-64 fixed left-0 top-0 flex flex-col py-6 shadow-2xl shadow-blue-900/20 z-50">
         <div className="px-6 mb-10 flex items-center gap-3">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
@@ -42,13 +56,14 @@ export default function AdminSidebar() {
             <Icon icon="material-symbols:settings" />
             <span>Settings</span>
           </Link>
-          <Link
-            href="#"
+          <button
+           
             className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-colors duration-200 font-manrope tracking-tight font-medium hover:bg-white/5 rounded-full"
+            onClick={handleLogout}
           >
             <Icon icon="material-symbols:logout" />
             <span>Logout</span>
-          </Link>
+          </button>
           <div className="mt-4 px-4 py-4 bg-slate-900/50 rounded-2xl flex items-center gap-3 mx-2">
             <img
               alt="Admin Profile"
