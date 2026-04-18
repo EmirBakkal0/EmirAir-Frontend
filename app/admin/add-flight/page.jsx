@@ -70,7 +70,7 @@ export default function AdminDashboard() {
     const token = localStorage.getItem("adminToken");
 
     try {
-      const res = await fetch("http://localhost:5000/api/flights", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/flights`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -21,7 +21,7 @@ export default function Home() {
     // Fetch 81 cities strictly from backend
     const fetchCities = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/cities');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/cities`);
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
           setCities(json.data);
@@ -39,7 +39,7 @@ export default function Home() {
     try {
       setSearched(true);
       // Fetch all flights (Can be optimized via query params later)
-      const res = await fetch('http://localhost:5000/api/flights');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/flights/active`);
       const json = await res.json();
       
       if (json.success && Array.isArray(json.data)) {
@@ -74,7 +74,7 @@ export default function Home() {
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col">
      
-      <main className="flex-grow pt-20">
+      <main className="grow ">
         {/* Hero Section */}
         <section className="relative w-full h-[600px] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
