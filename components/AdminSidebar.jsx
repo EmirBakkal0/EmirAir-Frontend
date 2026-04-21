@@ -18,7 +18,8 @@ export default function AdminSidebar() {
     return null;
   }
 
-      return (<aside className="bg-slate-950 dark:bg-slate-950 h-screen w-64 fixed left-0 top-0 flex flex-col py-6 shadow-2xl shadow-blue-900/20 z-50">
+      return (
+      <aside className="bg-slate-950 dark:bg-slate-950 h-screen w-64 left-0 top-0 flex  flex-col py-6 shadow-2xl shadow-blue-900/20 z-50">
         <div className="px-6 mb-10 flex items-center gap-3">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
             <Icon icon="material-symbols:flight-takeoff" className="text-white" style={{ fontVariationSettings: "'FILL' 1" }} />
@@ -33,7 +34,7 @@ export default function AdminSidebar() {
         <nav className="flex-1 space-y-1">
           {/* Flights Tab (Active) */}
           <Link
-            href="#"
+            href="/admin"
             className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-500 rounded-full mx-2 font-manrope tracking-tight font-medium scale-95 active:scale-90 duration-150"
           >
             <Icon icon="material-symbols:flight-takeoff" />
@@ -41,7 +42,7 @@ export default function AdminSidebar() {
           </Link>
           {/* Bookings Tab (Inactive) */}
           <Link
-            href="#"
+            href="/admin/bookings"
             className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-colors duration-200 font-manrope tracking-tight font-medium hover:bg-white/5 rounded-full"
           >
             <Icon icon="material-symbols:confirmation-number" />

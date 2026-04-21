@@ -1,31 +1,15 @@
 "use client";
-import Link from "next/link";
-import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import AddFlightForm from "@/components/AddFlightForm";
 
 export default function AdminDashboard() {
   const router = useRouter();
 
-  const [cities, setCities] = useState([]);
   const [flights, setFlights] = useState([]);
   const [flightAmount, setFlightAmount] = useState(0);
-
-  const fetchCities = async () => {
-    try {
-      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND + "/api/cities");
-      if (!res.ok) {
-        throw new Error(
-          `Failed to fetch cities: ${res.status} ${res.statusText}`,
-        );
-      }
-      const data = await res.json();
-      setCities(data);
-    } catch (err) {
-      console.error("Error fetching cities:", err);
-    }
-  };
+  const [isAddFlightModalOpen, setIsAddFlightModalOpen] = useState(false);
 
   const fetchActiveFlights = async () => {
     try {
@@ -55,9 +39,31 @@ export default function AdminDashboard() {
       return;
     }
 
-    fetchCities();
     fetchActiveFlights();
   }, [router]);
+
+  useEffect(() => {
+    if (!isAddFlightModalOpen) {
+      return;
+    }
+
+    const handleEscClose = (event) => {
+      if (event.key === "Escape") {
+        setIsAddFlightModalOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscClose);
+    return () => {
+      window.removeEventListener("keydown", handleEscClose);
+    };
+  }, [isAddFlightModalOpen]);
+
+  const handleFlightCreated = (newFlight) => {
+    setFlights((prevFlights) => [...prevFlights, newFlight]);
+    setFlightAmount((prevAmount) => prevAmount + 1);
+    setIsAddFlightModalOpen(false);
+  };
 
   async function deleteFlight(id) {
     try {
@@ -84,9 +90,9 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="bg-background text-on-background min-h-screen flex overflow-hidden">
+    <div className="bg-background text-on-background min-h-screen flex mx-auto overflow-hidden">
       {/* Main Content Area */}
-      <main className="flex-1 ml-64 min-h-screen flex flex-col">
+      <main className="flex-1 min-h-screen flex flex-col">
         {/* TopAppBar Component */}
         <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl fixed top-0 right-0 w-[calc(100%-16rem)] z-40 flex justify-between items-center px-8 h-16">
           <div className="flex items-center gap-4 flex-1">
@@ -137,13 +143,14 @@ export default function AdminDashboard() {
                 Active Flight Schedules
               </h2>
             </div>
-            <Link
-              href={"admin/add-flight"}
+            <button
+              type="button"
+              onClick={() => setIsAddFlightModalOpen(true)}
               className="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-3.5 rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               <Icon icon="material-symbols:add" />
               Add New Flight
-            </Link>
+            </button>
           </div>
 
           {/* Bento Stats Grid */}
@@ -202,17 +209,17 @@ export default function AdminDashboard() {
                 <button className="bg-secondary text-white px-4 py-1.5 rounded-full text-xs font-bold">
                   All Flights
                 </button>
-                <button className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors">
+                {/* <button className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors">
                   Domestic
                 </button>
                 <button className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors">
                   International
-                </button>
+                </button> */}
               </div>
-              <button className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+              {/* <button className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
                 <Icon icon="material-symbols:filter-list" className="text-sm" />
                 Advanced Filters
-              </button>
+              </button> */}
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -356,6 +363,41 @@ export default function AdminDashboard() {
           </div>
         </div>
       </main>
+
+      {isAddFlightModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px] flex items-center justify-center px-4"
+          onClick={() => setIsAddFlightModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-surface-container-lowest p-6 md:p-8 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-2xl font-black text-on-surface">Add New Flight</h3>
+                <p className="text-sm text-slate-500 mt-1">
+                  Create a new flight schedule without leaving this page.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddFlightModalOpen(false)}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:bg-surface-container-high transition-colors"
+                aria-label="Close add flight form"
+              >
+                <Icon icon="material-symbols:close" className="text-xl" />
+              </button>
+            </div>
+
+            <AddFlightForm
+              onCreated={handleFlightCreated}
+              onCancel={() => setIsAddFlightModalOpen(false)}
+              compact
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
