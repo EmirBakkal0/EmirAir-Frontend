@@ -3,13 +3,16 @@ import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AddFlightForm from "@/components/AddFlightForm";
+import EditFlightForm from "@/components/EditFlightForm";
 
 export default function AdminDashboard() {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(true);
   const [flights, setFlights] = useState([]);
   const [flightAmount, setFlightAmount] = useState(0);
   const [isAddFlightModalOpen, setIsAddFlightModalOpen] = useState(false);
+  const [isEditFlightModalOpen, setIsEditFlightModalOpen] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState(null);
 
   const fetchActiveFlights = async () => {
     try {
@@ -26,11 +29,39 @@ export default function AdminDashboard() {
         let results = json.data;
         setFlights(results);
         setFlightAmount(results.length);
+        
       }
     } catch (errrooor) {
       console.error("error while fetching flights", errrooor);
+      
+    }finally {
+      setLoading(false);
     }
   };
+
+  const fetchOldFlights = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/api/flights/old`,
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch flights: ${response.status} ${response.statusText}`,
+        );
+      } 
+      const json = await response.json();
+      if (json.success && Array.isArray(json.data)) {
+        let results = json.data;
+        setFlights(results);
+        // setFlightAmount(results.length);
+      }
+    } catch (error) {
+      console.error("error while fetching flights", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -43,13 +74,15 @@ export default function AdminDashboard() {
   }, [router]);
 
   useEffect(() => {
-    if (!isAddFlightModalOpen) {
+    if (!isAddFlightModalOpen && !isEditFlightModalOpen) {
       return;
     }
 
     const handleEscClose = (event) => {
       if (event.key === "Escape") {
         setIsAddFlightModalOpen(false);
+        setIsEditFlightModalOpen(false);
+        setSelectedFlight(null);
       }
     };
 
@@ -57,12 +90,27 @@ export default function AdminDashboard() {
     return () => {
       window.removeEventListener("keydown", handleEscClose);
     };
-  }, [isAddFlightModalOpen]);
+  }, [isAddFlightModalOpen, isEditFlightModalOpen]);
 
   const handleFlightCreated = (newFlight) => {
     setFlights((prevFlights) => [...prevFlights, newFlight]);
     setFlightAmount((prevAmount) => prevAmount + 1);
     setIsAddFlightModalOpen(false);
+  };
+
+  const handleOpenEditModal = (flight) => {
+    setSelectedFlight(flight);
+    setIsEditFlightModalOpen(true);
+  };
+
+  const handleFlightUpdated = (updatedFlight) => {
+    setFlights((prevFlights) =>
+      prevFlights.map((flight) =>
+        flight._id === updatedFlight._id ? updatedFlight : flight,
+      ),
+    );
+    setIsEditFlightModalOpen(false);
+    setSelectedFlight(null);
   };
 
   async function deleteFlight(id) {
@@ -166,52 +214,20 @@ export default function AdminDashboard() {
                 <Icon icon="material-symbols:trending-up" className="text-sm" />
                 <span>+12% vs last month</span>
               </div>
-            </div>
-            <div className="bg-surface-container-lowest p-6 rounded-xl border border-transparent">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
-                On-Time Rate
-              </p>
-              <h3 className="text-3xl font-black text-on-surface">94.2%</h3>
-              <div className="mt-4 flex items-center text-xs text-blue-600 font-bold">
-                <Icon
-                  icon="material-symbols:check-circle"
-                  className="text-sm"
-                />
-                <span>Industry leading</span>
-              </div>
-            </div>
-            <div className="bg-surface-container-lowest p-6 rounded-xl border border-transparent">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
-                Active Routes
-              </p>
-              <h3 className="text-3xl font-black text-on-surface">86</h3>
-              <div className="mt-4 flex items-center text-xs text-slate-500 font-bold">
-                <Icon icon="material-symbols:map" className="text-sm" />
-                <span>24 Countries</span>
-              </div>
-            </div>
-            <div className="bg-surface-container-lowest p-6 rounded-xl border border-transparent">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
-                Revenue Today
-              </p>
-              <h3 className="text-3xl font-black text-on-surface">$42.5k</h3>
-              <div className="mt-4 flex items-center text-xs text-primary font-bold">
-                <Icon icon="material-symbols:payments" className="text-sm" />
-                <span>Peak season active</span>
-              </div>
-            </div>
+            </div>  
           </div>
 
           {/* Data Table Section */}
           <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
             <div className="p-6 bg-surface-container-low/50 flex justify-between items-center">
               <div className="flex gap-4">
-                <button className="bg-secondary text-white px-4 py-1.5 rounded-full text-xs font-bold">
-                  All Flights
+                <button onClick={() => fetchActiveFlights()} className="bg-secondary text-white px-4 py-1.5 rounded-full text-xs font-bold cursor-pointer hover:bg-secondary/90 transition-colors">
+                  Active Flights
                 </button>
-                {/* <button className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors">
-                  Domestic
+                <button onClick={() => fetchOldFlights()} className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors cursor-pointer">
+                  Old Flights
                 </button>
+                {/* 
                 <button className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors">
                   International
                 </button> */}
@@ -250,12 +266,19 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody className="divide-y divide-outline-variant/5">
                   {/* Row 1 */}
-                  {flights.map((flight) => (
-                    <tr
-                      key={flight._id}
-                      className="hover:bg-surface-container-low transition-colors group"
-                    >
-                      <td className="px-6 py-5">
+                  {loading ? (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-5 text-center text-slate-500">
+                        Loading flights...
+                      </td>
+                    </tr>
+                  ) : (
+                    flights.map((flight) => (
+                      <tr
+                        key={flight._id}
+                        className="hover:bg-surface-container-low transition-colors group"
+                      >
+                        <td className="px-6 py-5">
                         <span className="font-manrope font-bold text-on-surface">
                           {flight.flight_id}
                         </span>
@@ -265,11 +288,11 @@ export default function AdminDashboard() {
                           <div className="text-sm">
                             <p className="font-bold text-on-surface">
                               {flight.from_city?.city_name
-                                .slice(0, 3)
-                                .toUpperCase()}
+                                ?.slice(0, 3)
+                                .toUpperCase() || "N/A"}
                             </p>
                             <p className="text-xs text-slate-400">
-                              {flight.to_city?.city_name}
+                              {flight.from_city?.city_name || "Unknown"}
                             </p>
                           </div>
                           <Icon
@@ -279,11 +302,11 @@ export default function AdminDashboard() {
                           <div className="text-sm">
                             <p className="font-bold text-on-surface">
                               {flight.to_city?.city_name
-                                .slice(0, 3)
-                                .toUpperCase()}
+                                ?.slice(0, 3)
+                                .toUpperCase() || "N/A"}
                             </p>
                             <p className="text-xs text-slate-400">
-                              {flight.to_city?.city_name}
+                              {flight.to_city?.city_name || "Unknown"}
                             </p>
                           </div>
                         </div>
@@ -305,12 +328,16 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-primary">
-                          {"€" + flight.price.toFixed(2)}
+                          {"€" + Number(flight.price || 0).toFixed(2)}
                         </p>
                       </td>
                       <td className="px-6 py-5 text-right">
                         <div className="flex justify-end gap-2">
-                          <button className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal(flight)}
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                          >
                             <Icon
                               icon="material-symbols:edit"
                               className="text-sm"
@@ -325,7 +352,7 @@ export default function AdminDashboard() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>
@@ -398,6 +425,51 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {isEditFlightModalOpen && selectedFlight && (
+        <div
+          className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px] flex items-center justify-center px-4"
+          onClick={() => {
+            setIsEditFlightModalOpen(false);
+            setSelectedFlight(null);
+          }}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-surface-container-lowest p-6 md:p-8 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-2xl font-black text-on-surface">Edit Flight</h3>
+                <p className="text-sm text-slate-500 mt-1">
+                  Update flight details without leaving this page.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditFlightModalOpen(false);
+                  setSelectedFlight(null);
+                }}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:bg-surface-container-high transition-colors"
+                aria-label="Close edit flight form"
+              >
+                <Icon icon="material-symbols:close" className="text-xl" />
+              </button>
+            </div>
+
+            <EditFlightForm
+              flight={selectedFlight}
+              onUpdated={handleFlightUpdated}
+              onCancel={() => {
+                setIsEditFlightModalOpen(false);
+                setSelectedFlight(null);
+              }}
+              compact
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+    }

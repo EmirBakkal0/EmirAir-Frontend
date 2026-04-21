@@ -19,7 +19,7 @@ export default function AdminSidebar() {
   }
 
       return (
-      <aside className="bg-slate-950 dark:bg-slate-950 h-screen w-64 left-0 top-0 flex  flex-col py-6 shadow-2xl shadow-blue-900/20 z-50">
+      <aside className="bg-slate-950 dark:bg-slate-950 h-screen sticky w-64 left-0 top-0 flex  flex-col py-6 shadow-2xl shadow-blue-900/20 z-50">
         <div className="px-6 mb-10 flex items-center gap-3">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
             <Icon icon="material-symbols:flight-takeoff" className="text-white" style={{ fontVariationSettings: "'FILL' 1" }} />
