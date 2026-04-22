@@ -9,6 +9,7 @@ export default function AdminBookings() {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedFlight, setSelectedFlight] = useState("All");
 
     useEffect(() => {
         const token = localStorage.getItem("adminToken");
@@ -82,17 +83,47 @@ export default function AdminBookings() {
         return acc;
     }, {});
 
+    const flightKeys = Object.keys(groupedTickets);
+    const filteredGroupedTickets = selectedFlight === "All" 
+        ? groupedTickets 
+        : { [selectedFlight]: groupedTickets[selectedFlight] };
+
     return (
         <div className="mx-auto min-h-screen w-full bg-background flex flex-col p-8">
             <h1 className="text-2xl font-black text-primary mb-8">All Bookings by Flight</h1>
             
-            {Object.keys(groupedTickets).length === 0 ? (
+            {flightKeys.length > 0 && (
+                <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container p-4 rounded-xl shadow-sm">
+                    <label htmlFor="flight-filter" className="font-bold text-on-surface">Filter by Flight:</label>
+                    <select 
+                        id="flight-filter"
+                        className="bg-surface text-on-surface border border-outline p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full md:w-auto"
+                        value={selectedFlight}
+                        onChange={(e) => setSelectedFlight(e.target.value)}
+                    >
+                        <option value="All">All Flights</option>
+                        {flightKeys.map(key => {
+                            const flightObj = groupedTickets[key]?.flightObj;
+                            const label = flightObj && flightObj.from_city && flightObj.to_city 
+                                ? `${key} (${flightObj.from_city.city_name} to ${flightObj.to_city.city_name})`
+                                : key;
+                            return (
+                                <option key={key} value={key}>{label}</option>
+                            );
+                        })}
+                    </select>
+                </div>
+            )}
+            
+            {Object.keys(filteredGroupedTickets).length === 0 || !filteredGroupedTickets[selectedFlight] && selectedFlight !== "All" ? (
                 <div className="p-8 bg-surface-container rounded-xl shadow-md text-center">
                     <p className="text-on-surface-variant font-medium text-lg">No tickets found.</p>
                 </div>
             ) : (
                 <div className="space-y-8">
-                    {Object.entries(groupedTickets).map(([flightId, data]) => (
+                    {Object.entries(filteredGroupedTickets).map(([flightId, data]) => {
+                        if (!data) return null;
+                        return (
                         <div key={flightId} className="bg-surface-container-lowest p-6 rounded-xl shadow-md border-t-4 border-primary">
                             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                                 <span className="bg-primary text-on-primary px-3 py-1 rounded-full text-sm">Flight: {flightId}</span>
@@ -132,7 +163,7 @@ export default function AdminBookings() {
                                 </table>
                             </div>
                         </div>
-                    ))}
+                    )})}
                 </div>
             )}
         </div>
