@@ -40,7 +40,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-surface flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full bg-surface-container rounded-3xl p-8 shadow-lg">
         <div className="text-center mb-8">
           <Icon icon="material-symbols:admin-panel-settings" className="text-5xl text-primary mx-auto mb-4" />
