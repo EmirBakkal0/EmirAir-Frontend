@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [isAddFlightModalOpen, setIsAddFlightModalOpen] = useState(false);
   const [isEditFlightModalOpen, setIsEditFlightModalOpen] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [activeTab, setActiveTab] = useState("active");
 
   const fetchActiveFlights = async () => {
     try {
@@ -29,7 +30,7 @@ export default function AdminDashboard() {
         let results = json.data;
         setFlights(results);
         setFlightAmount(results.length);
-        
+        setActiveTab("active");
       }
     } catch (errrooor) {
       console.error("error while fetching flights", errrooor);
@@ -55,6 +56,8 @@ export default function AdminDashboard() {
         let results = json.data;
         setFlights(results);
         // setFlightAmount(results.length);
+        setActiveTab("old");
+
       }
     } catch (error) {
       console.error("error while fetching flights", error);
@@ -138,49 +141,14 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="bg-background text-on-background min-h-screen flex mx-auto overflow-hidden">
+    <div className="container mx-auto bg-background text-on-background min-h-screen p-8 flex  overflow-hidden">
       {/* Main Content Area */}
-      <main className="flex-1 min-h-screen flex flex-col">
-        {/* TopAppBar Component */}
-        <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl fixed top-0 right-0 w-[calc(100%-16rem)] z-40 flex justify-between items-center px-8 h-16">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative w-full max-w-md">
-              <Icon
-                icon="material-symbols:search"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                className="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none font-body"
-                placeholder="Search flights, routes or IDs..."
-                type="text"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <button className="p-2 text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100">
-                <Icon icon="material-symbols:notifications" />
-              </button>
-              <button className="p-2 text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100">
-                <Icon icon="material-symbols:help-outline" />
-              </button>
-            </div>
-            <div className="h-8 w-[1px] bg-outline-variant/20"></div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-manrope font-bold text-blue-600">
-                Dashboard
-              </span>
-              <img
-                alt="Administrator"
-                className="w-8 h-8 rounded-full border border-outline-variant/30"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEm-ztTrdnjtVhdPWknbWEsaCWpQgbvWjSm1QDzqmR7Wr-QjpK4jz6_B1pGNaoCp1wNW6a2-plkd73awfXWMoMwB56sDJJAbPcWHwMjjvAS6G5bhGaEq3VLnLJjHjaVgI-OBV5nddKAH6RWJm2V9Fk9W-D1sbY3qpOcPHt_oAQt_9cwS0cA6WgZt9cQju-JZQEftX50HYIAGjYqmkExI-ml_fBxVDkLhKDZDPXfcZQTwtGh3fKfdhxUOqvlKPbeNWM8puwHRNP0XU"
-              />
-            </div>
-          </div>
-        </header>
+      <main className="flex-1 min-h-screen flex w-full flex-col">
+      
+       
 
         {/* Dashboard Canvas */}
-        <div className="mt-16 p-8 flex-1 overflow-y-auto">
+        <div className=" flex-1 overflow-y-auto">
           {/* Header Section */}
           <div className="flex justify-between items-end mb-8">
             <div>
@@ -194,7 +162,7 @@ export default function AdminDashboard() {
             <button
               type="button"
               onClick={() => setIsAddFlightModalOpen(true)}
-              className="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-3.5 rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              className="bg-gradient-to-r from-primary to-primary-container text-white  cursor-pointer px-8 py-3.5 rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               <Icon icon="material-symbols:add" />
               Add New Flight
@@ -210,10 +178,10 @@ export default function AdminDashboard() {
               <h3 className="text-3xl font-black text-on-surface">
                 {flightAmount}
               </h3>
-              <div className="mt-4 flex items-center text-xs text-green-600 font-bold">
-                <Icon icon="material-symbols:trending-up" className="text-sm" />
-                <span>+12% vs last month</span>
-              </div>
+                {/* <div className="mt-4 flex items-center text-xs text-green-600 font-bold">
+                  <Icon icon="material-symbols:trending-up" className="text-sm" />
+                  <span>+12% vs last month</span>
+                </div> */}
             </div>  
           </div>
 
@@ -221,10 +189,10 @@ export default function AdminDashboard() {
           <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
             <div className="p-6 bg-surface-container-low/50 flex justify-between items-center">
               <div className="flex gap-4">
-                <button onClick={() => fetchActiveFlights()} className="bg-secondary text-white px-4 py-1.5 rounded-full text-xs font-bold cursor-pointer hover:bg-secondary/90 transition-colors">
+                <button onClick={() => fetchActiveFlights()} className={`${activeTab === "active" ? "bg-secondary text-white" : "bg-surface-container-lowest text-on-surface-variant"} px-4 py-1.5 rounded-full text-xs font-bold cursor-pointer hover:bg-secondary/90 transition-colors`}>
                   Active Flights
                 </button>
-                <button onClick={() => fetchOldFlights()} className="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-surface-container-highest transition-colors cursor-pointer">
+                <button onClick={() => fetchOldFlights()} className={`${activeTab === "old" ? "bg-secondary text-white" : "bg-surface-container-lowest text-on-surface-variant"} px-4 py-1.5 rounded-full text-xs font-bold hover:bg-secondary/90 transition-colors cursor-pointer`}>
                   Old Flights
                 </button>
                 {/* 
@@ -328,7 +296,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-primary">
-                          {"€" + Number(flight.price || 0).toFixed(2)}
+                          {"€" + flight.price.toFixed(2)}
                         </p>
                       </td>
                       <td className="px-6 py-5 text-right">
