@@ -1,6 +1,15 @@
+"use client"
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation";
 function Navbar() {
+
+  const pathname = usePathname();
+  
+  const isActive = (href) => {
+    return pathname === href;
+  }
+
   return (
     <nav className="w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
         <div className="flex justify-between items-center h-20 px-8 max-w-screen-2xl mx-auto font-['Manrope'] tracking-tight">
@@ -11,16 +20,16 @@ function Navbar() {
             </div>
           {/* <div className="text-2xl font-black text-blue-700 dark:text-blue-400 tracking-tighter">EmirAir</div> */}
           <div className="hidden md:flex items-center gap-8">
-            <Link className="text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" href="/">
+            <Link className={isActive("/") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2  border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300"} href="/">
               Explore
             </Link>
-            <Link className="text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300" href="/my-trips">
+            <Link className={isActive("/my-trips") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300"} href="/my-trips">
               My Trips
             </Link>
-            <Link className="text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300" href="/support">
+            <Link className={isActive("/support") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300"} href="/support">
               Support
             </Link>
-            <Link className="text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300" href="/check-in">
+            <Link className={isActive("/check-in") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-3₀₀"} href="/check-in">
               Check-in
             </Link>
           </div>
