@@ -105,7 +105,7 @@ export default function AdminBookings() {
                         {flightKeys.map(key => {
                             const flightObj = groupedTickets[key]?.flightObj;
                             const label = flightObj && flightObj.from_city && flightObj.to_city 
-                                ? `${key} (${flightObj.from_city.city_name} to ${flightObj.to_city.city_name})`
+                                ? `${key} (${flightObj.from_city.city_name} to ${flightObj.to_city.city_name}) at ${new Date(flightObj.departure_time).toLocaleString()}`
                                 : key;
                             return (
                                 <option key={key} value={key}>{label}</option>
@@ -129,7 +129,7 @@ export default function AdminBookings() {
                                 <span className="bg-primary text-on-primary px-3 py-1 rounded-full text-sm">Flight: {flightId}</span>
                                 {data.flightObj && data.flightObj.from_city && data.flightObj.to_city && (
                                     <span className="text-on-surface-variant text-base">
-                                        {data.flightObj.from_city.city_name} to {data.flightObj.to_city.city_name}
+                                        {data.flightObj.from_city.city_name} to {data.flightObj.to_city.city_name} at {new Date(data.flightObj.departure_time).toLocaleString()}
                                     </span>
                                 )}
                             </h2>
@@ -142,6 +142,7 @@ export default function AdminBookings() {
                                             <th className="p-3 border-b border-outline-variant font-bold">Passenger Name</th>
                                             <th className="p-3 border-b border-outline-variant font-bold">Email</th>
                                             <th className="p-3 border-b border-outline-variant font-bold">Date Booked</th>
+                                            <th className="p-3 border-b border-outline-variant font-bold">Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -155,7 +156,10 @@ export default function AdminBookings() {
                                                     {ticket.passenger_email}
                                                 </td>
                                                 <td className="p-3 border-b border-outline-variant text-sm text-on-surface-variant">
-                                                    {ticket.createdAt ? new Date(ticket.createdAt).toLocaleString() : 'N/A'}
+                                                    {ticket.created_at ? new Date(ticket.created_at).toLocaleString() : 'N/A'}
+                                                </td>
+                                                <td className="p-3 border-b border-outline-variant text-sm text-on-surface-variant">
+                                                    ${ticket.price?.toFixed(2) || 'N/A'}
                                                 </td>
                                             </tr>
                                         ))}
