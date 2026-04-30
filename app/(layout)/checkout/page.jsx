@@ -25,7 +25,7 @@ function CheckoutForm() {
         if (flightId) {
             const fetchFlight = async () => {
                 try {
-                    const res = await fetch(`http://localhost:5000/api/flights/${flightId}`);
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/flights/${flightId}`);
                     const json = await res.json();
                     if (json.success) {
                         setFlight(json.data);
@@ -54,7 +54,7 @@ function CheckoutForm() {
         e.preventDefault();
         
         try {
-            const res = await fetch('http://localhost:5000/api/tickets', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/tickets`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
