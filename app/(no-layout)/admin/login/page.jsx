@@ -33,6 +33,7 @@ export default function AdminLogin() {
       }
 
       localStorage.setItem("adminToken", data.token);
+      localStorage.setItem("adminName", data.name || "Admin");
       router.push("/admin");
     } catch (err) {
       setError(err.message);

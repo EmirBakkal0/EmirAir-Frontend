@@ -11,7 +11,7 @@ function Navbar() {
   }
 
   return (
-    <nav className="w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+    <nav className="w-full z-50 bg-white/80  backdrop-blur-xl shadow-sm dark:shadow-none">
         <div className="flex justify-between items-center h-20 px-8 max-w-screen-2xl mx-auto font-['Manrope'] tracking-tight">
             <div>
                 <Link href="/" className="block w-24 h-12 relative">
@@ -26,16 +26,17 @@ function Navbar() {
             <Link className={isActive("/my-trips") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300"} href="/my-trips">
               My Trips
             </Link>
-            <Link className={isActive("/support") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300"} href="/support">
+            {/* <Link className={isActive("/support") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-300"} href="/support">
               Support
             </Link>
             <Link className={isActive("/check-in") ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 transition-colors duration-300" : "text-slate-600 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors duration-3₀₀"} href="/check-in">
               Check-in
-            </Link>
+            </Link> */}
           </div>
           <div className="flex items-center gap-4">
-            <button className="text-slate-600 font-medium hover:text-blue-500 transition-colors duration-300">Sign In</button>
-            <button className="bg-primary text-white px-6 py-2.5 rounded-full font-bold hover:opacity-90 active:scale-95 transition-all">Join Rewards</button>
+            <Link className="bg-primary text-white px-6 py-2.5 rounded-full font-bold hover:opacity-90 active:scale-95 transition-all" href="/admin">
+              Admin Panel
+            </Link>
           </div>
         </div>
       </nav>

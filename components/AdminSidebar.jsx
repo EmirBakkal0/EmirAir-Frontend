@@ -7,11 +7,33 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function AdminSidebar() {
-    const router = useRouter();
-    const handleLogout = () => {
+  const [name, setName] = useState("Admin");
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("adminName");
+        if (stored) setName(stored);
+      }
+    } catch (e) {
+      // ignore access errors
+    }
+  }, []);
+
+  const user = { name };
+
+  const router = useRouter();
+  const handleLogout = () => {
+    try {
+      if (typeof window !== "undefined") {
         localStorage.removeItem("adminToken");
-        router.push("/admin/login");
-    };
+        localStorage.removeItem("adminName");
+      }
+    } catch (e) {
+      console.error("Error clearing localStorage during logout", e);
+    }
+    router.push("/admin/login");
+  };
   
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -92,11 +114,11 @@ export default function AdminSidebar() {
         </nav>
         <div className="mt-auto px-2 space-y-1">
           <Link
-            href="#"
+            href="/"
             className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-colors duration-200 font-manrope tracking-tight font-medium hover:bg-white/5 rounded-full"
           >
-            <Icon icon="material-symbols:settings" />
-            <span>Settings</span>
+            <Icon icon="material-symbols:home" />
+            <span>Return to site</span>
           </Link>
           <button
             className="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-colors duration-200 font-manrope tracking-tight font-medium hover:bg-white/5 rounded-full"
@@ -106,15 +128,9 @@ export default function AdminSidebar() {
             <span>Logout</span>
           </button>
           <div className="mt-4 px-4 py-4 bg-slate-900/50 rounded-2xl flex items-center gap-3 mx-2">
-            <img
-              alt="Admin Profile"
-              width={40}
-              height={40}
-              className="w-10 h-10 rounded-full bg-slate-800"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJrSgBk3JKKwNye6-4Uv214Nd1ekRnmha2jnce9jwPBuAc1kbTY1S-TDGJ8Rtq_b8Py2oJY15Y48PkEcg-LawcrulsnCYYqO1RCP_t7Rsz8xI3ypGfl4PS6Iye4rcYuY07XmZH9KfCWkOY307OdgDLDrYYZogDQoHRwc4Wy19Xcx4NDIFzliTgcKJG-FGhjrragloWP6e6RIOWjf1ctXfEaistOzNZwysrsA5dP4Ic2UXIxYX_MmKXsbYt-Iloq9pdeS_XVI9MLmY"
-            />
+            <Icon className="text-white" icon="material-symbols:person" />
             <div className="overflow-hidden">
-              <p className="text-white text-sm font-bold truncate">Admin Profile</p>
+              <p className="text-white text-sm font-bold truncate">{user?.name || "Admin"}</p>
               <p className="text-slate-500 text-xs truncate">System Controller</p>
             </div>
           </div>
