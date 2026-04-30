@@ -3,8 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
+import { Suspense } from "react";
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const ticketId = searchParams.get("ticketId");
 
@@ -36,5 +37,13 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-surface flex items-center justify-center">Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }

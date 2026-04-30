@@ -1,10 +1,10 @@
 'use client'
 
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function Checkout() {
+function CheckoutForm() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const flightId = searchParams.get('flightId');
@@ -68,6 +68,7 @@ export default function Checkout() {
 
             if (json.success) {
                 setBookingSuccess(json.data.ticket_id);
+                router.push(`/checkout/success?ticketId=${json.data.ticket_id}`);
             } else {
                 alert(`Booking failed: ${json.error}`);
             }
@@ -79,25 +80,6 @@ export default function Checkout() {
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-bold">Loading flight details...</div>;
     if (error) return <div className="min-h-screen flex items-center justify-center text-red-500 font-bold">{error}</div>;
-
-    if (bookingSuccess) {
-        return (
-            <div className="bg-background min-h-screen flex items-center justify-center ">
-                <div className="bg-surface-container-lowest p-12 rounded-xl shadow-lg max-w-lg text-center border-t-8 border-primary">
-                    <Icon icon="mdi:check-circle" className="text-secondary text-8xl mx-auto mb-6" />
-                    <h2 className="text-3xl font-extrabold mb-4">Booking Confirmed!</h2>
-                    <p className="text-on-surface-variant mb-6">Your flight from {flight.from_city?.city_name} to {flight.to_city?.city_name} is confirmed.</p>
-                    <div className="bg-surface-container-highest p-6 rounded-lg mb-8">
-                        <span className="block text-sm uppercase tracking-widest font-bold text-on-surface-variant mb-2">Your Ticket ID</span>
-                        <span className="text-4xl font-black text-primary tracking-widest">{bookingSuccess}</span>
-                    </div>
-                    <button onClick={() => router.push('/')} className="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-all">
-                        Back to Home
-                    </button>
-                </div>
-            </div>
-        );
-    }
 
   return (
     <div className="text-on-surface">
@@ -335,4 +317,12 @@ export default function Checkout() {
       
     </div>
   );
+}
+
+export default function Checkout() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-bold">Loading...</div>}>
+            <CheckoutForm />
+        </Suspense>
+    )
 }
