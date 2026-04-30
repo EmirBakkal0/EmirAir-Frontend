@@ -85,7 +85,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative w-full h-[600px] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <Image src="/emirair.webp " className="w-full h-full object-cover" alt="cinematic wide shot of a modern white airplane flying above a sea of soft white clouds during a vibrant blue day"  fill priority />
+            <Image src="/emirair.webp" className="w-full h-full object-cover" alt="cinematic wide shot of a modern white airplane flying above a sea of soft white clouds during a vibrant blue day"  fill priority />
             <div className="absolute inset-0 bg-blue-900/20 backdrop-brightness-90"></div>
           </div>
           <div className="relative z-10 w-full max-w-5xl px-8">
@@ -174,29 +174,29 @@ export default function Home() {
                 </div>
               ) : (
                 flights.map(flight => (
-                  <div key={flight._id} className="group bg-surface-container-lowest p-8 rounded-xl flex flex-col md:flex-row items-center justify-between transition-all hover:bg-surface-bright hover:shadow-[0_20px_40px_rgba(25,28,30,0.06)]">
-                    <div className="flex items-center gap-12 w-full md:w-auto">
+                  <div key={flight._id} className="group bg-surface-container-lowest p-8 rounded-xl flex flex-col md:flex-row items-center justify-between border-b shadow-[0_20px_40px_rgba(25,28,30,0.06)] backdrop-blur-sm  transition-all hover:bg-surface-bright hover:shadow-[0_20px_40px_rgba(25,28,30,0.06)]">
+                    <div className="flex items-center gap-3 md:gap-12  w-full md:w-auto">
                       <div className="flex flex-col items-center">
                         <span className="text-xs font-bold text-primary mb-2 uppercase tracking-widest">{flight.flight_id}</span>
                         <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
                           <Icon icon="mdi:airplane" className="text-primary" />
                         </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-8">
+                      <div className="flex-1 flex items-center gap-3 md:gap-8">
                         <div className="text-center md:text-left">
-                          <span className="block text-2xl font-bold">
+                          <span className="block md:text-2xl font-bold">
                             {new Date(flight.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                           </span>
                           <span className="text-sm font-medium text-on-surface-variant">{flight.from_city?.city_name || 'N/A'}</span>
                         </div>
-                        <div className="flex-1 flex flex-col items-center px-4 min-w-[120px]">
+                        <div className="flex-1 flex flex-col items-center px-4 ">
                           <div className="w-full h-[2px] bg-surface-container-highest relative mt-2">
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary/40"></div>
                           </div>
                           <span className="text-[10px] font-bold text-primary mt-1">NON-STOP</span>
                         </div>
                         <div className="text-center md:text-right">
-                          <span className="block text-2xl font-bold">
+                          <span className="block md:text-2xl font-bold">
                             {new Date(flight.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                           </span>
                           <span className="text-sm font-medium text-on-surface-variant">{flight.to_city?.city_name || 'N/A'}</span>
@@ -209,8 +209,8 @@ export default function Home() {
                         <span className="text-sm font-semibold text-secondary">{flight.seats_available} Seats Left</span>
                       </div>
                       <div className="text-right">
-                        <span className="block text-xs font-bold text-on-surface-variant uppercase">Price</span>
-                        <span className="text-3xl font-extrabold">€{flight.price}</span>
+                        <span className="block  text-xs font-bold text-on-surface-variant uppercase">Price</span>
+                        <span className="text-xl md:text-3xl font-extrabold">€{flight.price}</span>
                       </div>
                       <button 
                         onClick={() => handleBook(flight._id)}
