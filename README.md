@@ -1,4 +1,4 @@
-# EmirAir Frontend
+<img width="1851" height="1153" alt="image" src="https://github.com/user-attachments/assets/5538b7f4-95e0-463d-96b7-4985e5108102" /># EmirAir Frontend
 
 This is the frontend for EmirAir, a flight booking application built with Next.js and Tailwind CSS. It provides a user-friendly interface for searching flights, booking tickets, and managing trips. It also includes a secure admin panel for site administrators.
 
@@ -23,8 +23,15 @@ The live application is deployed on Vercel and can be accessed here:
 *   **Styling:** [Tailwind CSS](https://tailwindcss.com/) for a utility-first CSS workflow.
 *   **Icons:** [Iconify](https://iconify.design/) for a wide range of SVG icons.
 *   **Deployment:** [Vercel](https://vercel.com/)
-
+## Screenshots
 ![1777585093457](image/README/1777585093457.png)
+<img width="1682" height="1361" alt="image" src="https://github.com/user-attachments/assets/68b15ebb-228c-4424-80c7-b92761cd1e5c" />
+<img width="1866" height="920" alt="image" src="https://github.com/user-attachments/assets/6d9ea3c7-d4a1-4fae-8e5f-10d1f1ab6a3a" />
+<img width="1851" height="1153" alt="image" src="https://github.com/user-attachments/assets/a5bc0e46-40e4-46d8-96f6-dccccc1ba874" />
+<img width="1866" height="920" alt="image" src="https://github.com/user-attachments/assets/fbd415b6-a7f6-4f99-829b-59cb5b336b73" />
+
+
+
 ## Getting Started
 
 To get a local copy up and running, follow these simple steps.
@@ -37,7 +44,7 @@ Make sure you have Node.js (version 18.x or newer) and npm installed on your mac
 
 1.  **Clone the repository:**
     ```sh
-    git clone <your-repository-url>
+    git clone https://github.com/EmirBakkal0/EmirAir-Frontend
     cd emirair-frontend
     ```
 
@@ -47,12 +54,17 @@ Make sure you have Node.js (version 18.x or newer) and npm installed on your mac
     ```
 
 3.  **Set up environment variables:**
-    Create a `.env.local` file in the root of your project and add the URL for your backend server.
+    Create a `.env` file in the root of your project and add the URL for your backend server.
     ```
     NEXT_PUBLIC_BACKEND=https://emirair-backend.vercel.app
     ```
 
-4.  **Run the development server:**
+    or go to the backend repo found here https://github.com/EmirBakkal0/emirair-backend to run the backend on local. Follow the steps there annd add the localhosted backend link to .env
+    ```
+    NEXT_PUBLIC_BACKEND=http://localhost:5000
+    ```
+
+5.  **Run the development server:**
     ```sh
     npm run dev
     ```
