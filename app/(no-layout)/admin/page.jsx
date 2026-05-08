@@ -173,7 +173,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
             <div className="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-primary/10 transition-all">
               <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
-                Total Flights
+                Total Active Flights
               </p>
               <h3 className="text-3xl font-black text-on-surface">
                 {flightAmount}
