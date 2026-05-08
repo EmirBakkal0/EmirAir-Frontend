@@ -44,7 +44,7 @@ Make sure you have Node.js (version 18.x or newer) and npm installed on your mac
 
 1.  **Clone the repository:**
     ```sh
-    git clone https://github.com/EmirBakkal0/EmirAir-Frontend
+    git clone https://github.com/EmirBakkal0/EmirAir-Frontend.git
     cd emirair-frontend
     ```
 
