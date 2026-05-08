@@ -1,4 +1,4 @@
-<img width="1851" height="1153" alt="image" src="https://github.com/user-attachments/assets/5538b7f4-95e0-463d-96b7-4985e5108102" /># EmirAir Frontend
+# EmirAir Frontend
 
 This is the frontend for EmirAir, a flight booking application built with Next.js and Tailwind CSS. It provides a user-friendly interface for searching flights, booking tickets, and managing trips. It also includes a secure admin panel for site administrators.
 
